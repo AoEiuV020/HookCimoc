@@ -3,6 +3,8 @@ package cc.aoeiuv020.hookcimoc;
 import android.app.Application;
 import android.app.Instrumentation;
 
+import java.lang.reflect.Member;
+
 import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XposedBridge;
@@ -11,6 +13,8 @@ import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
 @SuppressWarnings("RedundantThrows")
 public class MainHook implements IXposedHookLoadPackage {
+    @SuppressWarnings("All")
+    private static final boolean DEBUG = BuildConfig.DEBUG && false;
     @Override
     public void handleLoadPackage(XC_LoadPackage.LoadPackageParam lpparam) throws Throwable {
         XposedBridge.log("handleLoadPackage: " + lpparam.processName + ", " + lpparam.processName);
@@ -32,6 +36,7 @@ public class MainHook implements IXposedHookLoadPackage {
         var r = new XC_MethodHook() {
             @Override
             protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                log(param);
                 XposedHelpers.setObjectField(param.thisObject, "canSkip", true);
                 XposedHelpers.callMethod(param.thisObject, "gotoMainActivity");
                 param.setResult(null);
@@ -42,11 +47,15 @@ public class MainHook implements IXposedHookLoadPackage {
                 clazz,
                 lpparam.classLoader, "initAd", r
         );
-/*
         nothing(lpparam, clazz,
-                "initAd",
                 "showAD");
-*/
+    }
+
+    private void log(XC_MethodHook.MethodHookParam param) {
+        XposedBridge.log("hook: " + param.thisObject.getClass().getName() + "." + param.method.getName());
+        if (DEBUG) {
+            XposedBridge.log(new Throwable());
+        }
     }
 
     private void hookMain(XC_LoadPackage.LoadPackageParam lpparam) {
@@ -74,13 +83,14 @@ public class MainHook implements IXposedHookLoadPackage {
     }
 
     private void hookDebug(XC_LoadPackage.LoadPackageParam lpparam) {
-        if (!BuildConfig.DEBUG) {
+        if (!DEBUG) {
             return;
         }
         var r = new XC_MethodHook() {
             @Override
             protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                XposedBridge.log(new Throwable());
+                // 无功能，必要时断点使用的，
+                log(param);
             }
         };
 
@@ -94,7 +104,7 @@ public class MainHook implements IXposedHookLoadPackage {
         var r = new XC_MethodHook() {
             @Override
             protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                XposedBridge.log(new Throwable());
+                log(param);
                 param.setResult(null);
             }
         };

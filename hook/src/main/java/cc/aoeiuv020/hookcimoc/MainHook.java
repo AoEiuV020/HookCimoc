@@ -16,6 +16,7 @@ public class MainHook implements IXposedHookLoadPackage {
         XposedBridge.log("handleLoadPackage: " + lpparam.processName + ", " + lpparam.processName);
         hookDebug(lpparam);
         hookSplash(lpparam);
+        hookSearch(lpparam);
 
     }
 
@@ -26,6 +27,17 @@ public class MainHook implements IXposedHookLoadPackage {
         );
         XposedHelpers.findAndHookMethod(
                 "com.haleydu.cimoc.SplashActivity",
+                lpparam.classLoader, "showAD", XC_MethodReplacement.DO_NOTHING
+        );
+    }
+
+    private void hookSearch(XC_LoadPackage.LoadPackageParam lpparam) {
+        XposedHelpers.findAndHookMethod(
+                "com.haleydu.cimoc.ui.activity.SearchActivity",
+                lpparam.classLoader, "initAd", XC_MethodReplacement.DO_NOTHING
+        );
+        XposedHelpers.findAndHookMethod(
+                "com.haleydu.cimoc.ui.activity.SearchActivity",
                 lpparam.classLoader, "showAD", XC_MethodReplacement.DO_NOTHING
         );
     }
@@ -44,7 +56,7 @@ public class MainHook implements IXposedHookLoadPackage {
 
         XposedHelpers.findAndHookMethod(
                 "android.app.Activity",
-                lpparam.classLoader, "onCreate", Bundle.class, r
+                lpparam.classLoader, "onResume", r
         );
     }
 }

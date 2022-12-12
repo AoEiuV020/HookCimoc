@@ -24,7 +24,7 @@ public class MainHook implements IXposedHookLoadPackage {
                 hookSplash(lpparam);
                 hookMain(lpparam);
                 hookSearch(lpparam);
-                hookResult(lpparam);
+                // hookResult(lpparam);
             }
         });
 

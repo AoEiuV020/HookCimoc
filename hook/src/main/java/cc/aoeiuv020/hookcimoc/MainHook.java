@@ -3,8 +3,6 @@ package cc.aoeiuv020.hookcimoc;
 import android.app.Application;
 import android.app.Instrumentation;
 
-import java.lang.reflect.Member;
-
 import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XposedBridge;
@@ -26,6 +24,7 @@ public class MainHook implements IXposedHookLoadPackage {
                 hookSplash(lpparam);
                 hookMain(lpparam);
                 hookSearch(lpparam);
+                hookResult(lpparam);
             }
         });
 
@@ -79,6 +78,34 @@ public class MainHook implements IXposedHookLoadPackage {
                 "requestBannerAd",
                 "showAd",
                 "showBannerAd"
+        );
+    }
+
+    private void hookResult(XC_LoadPackage.LoadPackageParam lpparam) {
+        var clazz = "com.haleydu.cimoc.source.Kuaikanmanhua";
+        var r = new XC_MethodHook() {
+            @Override
+            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                log(param);
+                Object builder = XposedHelpers.newInstance(XposedHelpers.findClass("okhttp3.Request.Builder", lpparam.classLoader));
+                XposedHelpers.callMethod(builder, "url", "http://127.0.0.1/");
+                Object build = XposedHelpers.callMethod(builder, "build");
+                param.setResult(build);
+            }
+
+            @Override
+            protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                log(param);
+            }
+        };
+
+        XposedHelpers.findAndHookMethod(
+                clazz,
+                lpparam.classLoader,
+                "getSearchRequest",
+                String.class,
+                int.class,
+                r
         );
     }
 

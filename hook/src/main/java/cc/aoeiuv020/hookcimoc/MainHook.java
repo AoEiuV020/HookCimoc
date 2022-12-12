@@ -1,10 +1,10 @@
 package cc.aoeiuv020.hookcimoc;
 
-import android.os.Bundle;
+import android.app.Application;
+import android.app.Instrumentation;
 
 import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.XC_MethodHook;
-import de.robv.android.xposed.XC_MethodReplacement;
 import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
@@ -14,10 +14,16 @@ public class MainHook implements IXposedHookLoadPackage {
     @Override
     public void handleLoadPackage(XC_LoadPackage.LoadPackageParam lpparam) throws Throwable {
         XposedBridge.log("handleLoadPackage: " + lpparam.processName + ", " + lpparam.processName);
-        hookDebug(lpparam);
-        hookSplash(lpparam);
-        hookMain(lpparam);
-        hookSearch(lpparam);
+        XposedHelpers.findAndHookMethod(Instrumentation.class, "callApplicationOnCreate", Application.class, new XC_MethodHook() {
+            @Override
+            protected void afterHookedMethod(MethodHookParam param) throws Throwable {
+                if (!(param.args[0] instanceof Application)) return;
+                hookDebug(lpparam);
+                hookSplash(lpparam);
+                hookMain(lpparam);
+                hookSearch(lpparam);
+            }
+        });
 
     }
 
@@ -35,12 +41,16 @@ public class MainHook implements IXposedHookLoadPackage {
         nothing(lpparam, clazz, "requestRewardAd");
         nothing(lpparam, clazz, "showInteractionAd");
         nothing(lpparam, clazz, "showRewardAd");
+        nothing(lpparam, clazz, "startInteractionAd");
     }
 
     private void hookSearch(XC_LoadPackage.LoadPackageParam lpparam) {
         var clazz = "com.haleydu.cimoc.ui.activity.SearchActivity";
         nothing(lpparam, clazz, "initAd");
-        nothing(lpparam, clazz, "showAD");
+        nothing(lpparam, clazz, "loadBannerAd");
+        nothing(lpparam, clazz, "requestBannerAd");
+        nothing(lpparam, clazz, "showAd");
+        nothing(lpparam, clazz, "showBannerAd");
     }
 
     private void hookDebug(XC_LoadPackage.LoadPackageParam lpparam) {
@@ -51,7 +61,6 @@ public class MainHook implements IXposedHookLoadPackage {
             @Override
             protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                 new Throwable().printStackTrace();
-                super.beforeHookedMethod(param);
             }
         };
 
@@ -62,11 +71,21 @@ public class MainHook implements IXposedHookLoadPackage {
     }
 
     private void nothing(XC_LoadPackage.LoadPackageParam lpparam, String clazz, String... methods) {
+        var r = new XC_MethodHook() {
+            @Override
+            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                param.setResult(null);
+            }
+        };
         for (String method : methods) {
-            XposedHelpers.findAndHookMethod(
-                    clazz,
-                    lpparam.classLoader, "showAD", XC_MethodReplacement.DO_NOTHING
-            );
+            try {
+                XposedHelpers.findAndHookMethod(
+                        clazz,
+                        lpparam.classLoader, method, r
+                );
+            } catch (Throwable t) {
+                XposedBridge.log(t);
+            }
         }
     }
 }

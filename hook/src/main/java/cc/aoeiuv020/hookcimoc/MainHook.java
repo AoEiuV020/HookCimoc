@@ -29,28 +29,33 @@ public class MainHook implements IXposedHookLoadPackage {
 
     private void hookSplash(XC_LoadPackage.LoadPackageParam lpparam) {
         var clazz = "com.haleydu.cimoc.SplashActivity";
-        nothing(lpparam, clazz, "initAd");
-        nothing(lpparam, clazz, "showAD");
+        nothing(lpparam, clazz,
+                "initAd",
+                "showAD");
     }
 
     private void hookMain(XC_LoadPackage.LoadPackageParam lpparam) {
         var clazz = "com.haleydu.cimoc.ui.activity.MainActivity";
-        nothing(lpparam, clazz, "loadInteractionAd");
-        nothing(lpparam, clazz, "loadRewardAd");
-        nothing(lpparam, clazz, "requestInteractionAd");
-        nothing(lpparam, clazz, "requestRewardAd");
-        nothing(lpparam, clazz, "showInteractionAd");
-        nothing(lpparam, clazz, "showRewardAd");
-        nothing(lpparam, clazz, "startInteractionAd");
+        nothing(lpparam, clazz,
+                "loadInteractionAd",
+                "loadRewardAd",
+                "requestInteractionAd",
+                "requestRewardAd",
+                "showInteractionAd",
+                "showRewardAd",
+                "startInteractionAd"
+        );
     }
 
     private void hookSearch(XC_LoadPackage.LoadPackageParam lpparam) {
         var clazz = "com.haleydu.cimoc.ui.activity.SearchActivity";
-        nothing(lpparam, clazz, "initAd");
-        nothing(lpparam, clazz, "loadBannerAd");
-        nothing(lpparam, clazz, "requestBannerAd");
-        nothing(lpparam, clazz, "showAd");
-        nothing(lpparam, clazz, "showBannerAd");
+        nothing(lpparam, clazz,
+                "initAd",
+                "loadBannerAd",
+                "requestBannerAd",
+                "showAd",
+                "showBannerAd"
+        );
     }
 
     private void hookDebug(XC_LoadPackage.LoadPackageParam lpparam) {

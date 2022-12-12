@@ -16,30 +16,31 @@ public class MainHook implements IXposedHookLoadPackage {
         XposedBridge.log("handleLoadPackage: " + lpparam.processName + ", " + lpparam.processName);
         hookDebug(lpparam);
         hookSplash(lpparam);
+        hookMain(lpparam);
         hookSearch(lpparam);
 
     }
 
     private void hookSplash(XC_LoadPackage.LoadPackageParam lpparam) {
-        XposedHelpers.findAndHookMethod(
-                "com.haleydu.cimoc.SplashActivity",
-                lpparam.classLoader, "initAd", XC_MethodReplacement.DO_NOTHING
-        );
-        XposedHelpers.findAndHookMethod(
-                "com.haleydu.cimoc.SplashActivity",
-                lpparam.classLoader, "showAD", XC_MethodReplacement.DO_NOTHING
-        );
+        var clazz = "com.haleydu.cimoc.SplashActivity";
+        nothing(lpparam, clazz, "initAd");
+        nothing(lpparam, clazz, "showAD");
+    }
+
+    private void hookMain(XC_LoadPackage.LoadPackageParam lpparam) {
+        var clazz = "com.haleydu.cimoc.ui.activity.MainActivity";
+        nothing(lpparam, clazz, "loadInteractionAd");
+        nothing(lpparam, clazz, "loadRewardAd");
+        nothing(lpparam, clazz, "requestInteractionAd");
+        nothing(lpparam, clazz, "requestRewardAd");
+        nothing(lpparam, clazz, "showInteractionAd");
+        nothing(lpparam, clazz, "showRewardAd");
     }
 
     private void hookSearch(XC_LoadPackage.LoadPackageParam lpparam) {
-        XposedHelpers.findAndHookMethod(
-                "com.haleydu.cimoc.ui.activity.SearchActivity",
-                lpparam.classLoader, "initAd", XC_MethodReplacement.DO_NOTHING
-        );
-        XposedHelpers.findAndHookMethod(
-                "com.haleydu.cimoc.ui.activity.SearchActivity",
-                lpparam.classLoader, "showAD", XC_MethodReplacement.DO_NOTHING
-        );
+        var clazz = "com.haleydu.cimoc.ui.activity.SearchActivity";
+        nothing(lpparam, clazz, "initAd");
+        nothing(lpparam, clazz, "showAD");
     }
 
     private void hookDebug(XC_LoadPackage.LoadPackageParam lpparam) {
@@ -58,5 +59,14 @@ public class MainHook implements IXposedHookLoadPackage {
                 "android.app.Activity",
                 lpparam.classLoader, "onResume", r
         );
+    }
+
+    private void nothing(XC_LoadPackage.LoadPackageParam lpparam, String clazz, String... methods) {
+        for (String method : methods) {
+            XposedHelpers.findAndHookMethod(
+                    clazz,
+                    lpparam.classLoader, "showAD", XC_MethodReplacement.DO_NOTHING
+            );
+        }
     }
 }

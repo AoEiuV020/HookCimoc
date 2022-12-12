@@ -65,7 +65,7 @@ public class MainHook implements IXposedHookLoadPackage {
         var r = new XC_MethodHook() {
             @Override
             protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                new Throwable().printStackTrace();
+                XposedBridge.log(new Throwable());
             }
         };
 
@@ -79,6 +79,7 @@ public class MainHook implements IXposedHookLoadPackage {
         var r = new XC_MethodHook() {
             @Override
             protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                XposedBridge.log(new Throwable());
                 param.setResult(null);
             }
         };

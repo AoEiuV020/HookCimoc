@@ -29,9 +29,24 @@ public class MainHook implements IXposedHookLoadPackage {
 
     private void hookSplash(XC_LoadPackage.LoadPackageParam lpparam) {
         var clazz = "com.haleydu.cimoc.SplashActivity";
+        var r = new XC_MethodHook() {
+            @Override
+            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                XposedHelpers.setObjectField(param.thisObject, "canSkip", true);
+                XposedHelpers.callMethod(param.thisObject, "gotoMainActivity");
+                param.setResult(null);
+            }
+        };
+
+        XposedHelpers.findAndHookMethod(
+                clazz,
+                lpparam.classLoader, "initAd", r
+        );
+/*
         nothing(lpparam, clazz,
                 "initAd",
                 "showAD");
+*/
     }
 
     private void hookMain(XC_LoadPackage.LoadPackageParam lpparam) {

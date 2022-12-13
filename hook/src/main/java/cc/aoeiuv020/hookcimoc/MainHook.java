@@ -44,10 +44,12 @@ public class MainHook implements IXposedHookLoadPackage {
 
         XposedHelpers.findAndHookMethod(
                 clazz,
-                lpparam.classLoader, "initAd", r
+                lpparam.classLoader, "loadSplashAd", r
         );
-        nothing(lpparam, clazz,
-                "showAD");
+        XposedHelpers.findAndHookMethod(
+                clazz,
+                lpparam.classLoader, "showAD", r
+        );
     }
 
     private void log(XC_MethodHook.MethodHookParam param) {

@@ -2,6 +2,9 @@ package cc.aoeiuv020.hookcimoc;
 
 import android.app.Application;
 import android.app.Instrumentation;
+import android.content.ClipData;
+import android.content.Context;
+import android.text.TextUtils;
 
 import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.XC_MethodHook;
@@ -25,6 +28,7 @@ public class MainHook implements IXposedHookLoadPackage {
                 hookMain(lpparam);
                 hookSearch(lpparam);
                 // hookResult(lpparam);
+                hookClip(lpparam);
             }
         });
 
@@ -107,6 +111,25 @@ public class MainHook implements IXposedHookLoadPackage {
                 "getSearchRequest",
                 String.class,
                 int.class,
+                r
+        );
+    }
+
+    private void hookClip(XC_LoadPackage.LoadPackageParam lpparam) {
+        var clazz = "com.youxiao.ssp.base.tools.n";
+        var r = new XC_MethodHook() {
+            @Override
+            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                param.setResult(null);
+            }
+        };
+
+        XposedHelpers.findAndHookMethod(
+                clazz,
+                lpparam.classLoader,
+                "a",
+                Context.class,
+                String.class,
                 r
         );
     }

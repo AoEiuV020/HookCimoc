@@ -2,7 +2,6 @@ package cc.aoeiuv020.hookcimoc;
 
 import android.app.Application;
 import android.app.Instrumentation;
-import android.content.ClipData;
 import android.content.Context;
 import android.text.TextUtils;
 
@@ -24,6 +23,7 @@ public class MainHook implements IXposedHookLoadPackage {
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                 if (!(param.args[0] instanceof Application)) return;
                 hookDebug(lpparam);
+                hookPreference(lpparam);
                 hookSplash(lpparam);
                 hookMain(lpparam);
                 hookSearch(lpparam);
@@ -32,6 +32,28 @@ public class MainHook implements IXposedHookLoadPackage {
             }
         });
 
+    }
+
+    private void hookPreference(XC_LoadPackage.LoadPackageParam lpparam) {
+        var clazz = "com.haleydu.cimoc.manager.PreferenceManager";
+        var r = new XC_MethodHook() {
+            @Override
+            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                if (!TextUtils.equals((String)param.args[0], "pref_global_shutdown_ad")) {
+                    return;
+                }
+                param.setResult(true);
+            }
+        };
+
+        XposedHelpers.findAndHookMethod(
+                clazz,
+                lpparam.classLoader,
+                "getBoolean",
+                String.class,
+                boolean.class,
+                r
+        );
     }
 
     private void hookSplash(XC_LoadPackage.LoadPackageParam lpparam) {

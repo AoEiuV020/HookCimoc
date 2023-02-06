@@ -29,9 +29,19 @@ public class MainHook implements IXposedHookLoadPackage {
                 hookSearch(lpparam);
                 // hookResult(lpparam);
                 hookClip(lpparam);
+                hookCopyright(lpparam);
             }
         });
 
+    }
+
+    private void hookCopyright(XC_LoadPackage.LoadPackageParam lpparam) {
+        XposedHelpers.findAndHookMethod("com.haleydu.cimoc.core.Manga", lpparam.classLoader, "isCopyrightManga", java.lang.String.class, new XC_MethodHook() {
+            @Override
+            protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                param.setResult(false);
+            }
+        });
     }
 
     private void hookPreference(XC_LoadPackage.LoadPackageParam lpparam) {

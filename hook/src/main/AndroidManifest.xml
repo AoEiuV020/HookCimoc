@@ -19,7 +19,7 @@
             android:value="true" />
         <meta-data
             android:name="xposeddescription"
-            android:value="给Cimoc去广告" />
+            android:value="给Cimoc漫画去广告" />
         <meta-data
             android:name="xposedminversion"
             android:value="82" />
